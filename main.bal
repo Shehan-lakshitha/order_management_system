@@ -129,34 +129,26 @@ service on new http:Listener(9092){
 
     resource function post orders(OrderInput input) returns error? {
         mongodb:Collection ordersCollection = check self.db->getCollection("orders");
-        mongodb:Collection customersCollection = check self.db->getCollection("customers");
-
         string id = uuid:createType1AsString();
         Order 'order = {
             id,
             ...input
         };
-        check ordersCollection->insertOne('order);
+        check ordersCollection->insertOne('order); 
 
-        mongodb:UpdateResult updateResult = check customersCollection->updateOne(
-            {
-                id: input.customerId
-            },
-            {
-                "$push": {
-                    orders: {
-                        id: id
-                    }
-                }
-            }
-        );
+        // mongodb:Collection customers = check self.db->getCollection("customers");
 
-        if (updateResult.modifiedCount == 0) {
-        return error(string `Customer with ID ${input.customerId} was not found or not updated.`);
-        }
-
-    return;
-
+        // _ = check customers->updateOne(
+        //     {
+        //         id: input.customerId
+        //     },
+        //     {
+        //         set:{
+        //             orders: id
+        //         }
+        //     });  
+        // };
         
-    }
+    };
 }
+
